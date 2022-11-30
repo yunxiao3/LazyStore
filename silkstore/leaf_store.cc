@@ -2,6 +2,8 @@
 // Created by zxjcarrot on 2019-07-15.
 //
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "table/filter_block.h"

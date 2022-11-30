@@ -1,19 +1,19 @@
-#ifndef STORAGE_LEVELDB_INCLUDE_NVM_LEAF_INDEX_H_
-#define STORAGE_LEVELDB_INCLUDE_NVM_LEAF_INDEX_H_
+#pragma once
 
-#include "db/write_batch_internal.h"
 #include <cstdint>
 #include <cstdio>
 #include <map>
 #include <string>
+
+#include "db/write_batch_internal.h"
 #include "leveldb/db.h"
 #include "leveldb/iterator.h"
 #include "leveldb/options.h"
 #include "leveldb/write_batch.h"
 #include "port/port.h"
 #include "port/thread_annotations.h"
-#include "nvm/leafindex/leafindex.h"
-#include "nvm/nvmmanager.h"
+#include "nvm/leafindex/leaf_index.h"
+#include "nvm/nvm_manager.h"
 
 namespace leveldb {
 
@@ -130,5 +130,3 @@ class NvmLeafIndex : public DB {
 
 }  // namespace silkstore
 }  // namespace leveldb
-
-#endif  // STORAGE_LEVELDB_INCLUDE_NVM_LEAF_INDEX_H_

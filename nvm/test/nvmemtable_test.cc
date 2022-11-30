@@ -1,7 +1,5 @@
 #include "nvm/nvmemtable.h"
 #include "db/dbformat.h"
-#include "port/atomic_pointer.h"
-
 #include "db/log_writer.h"
 #include "db/memtable.h"
 #include "db/snapshot.h"
@@ -9,9 +7,10 @@
 #include <iostream>
 #include "leveldb/db.h"
 #include "leveldb/env.h"
+#include "port/atomic_pointer.h"
 #include "port/port.h"
 #include "port/thread_annotations.h"
-#include "nvm/nvmmanager.h"
+#include "nvm/nvm_manager.h"
 
 namespace leveldb {
 

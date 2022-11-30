@@ -4,11 +4,13 @@
 
 #include "silkstore/segment.h"
 
+#include <algorithm>
 #include <cmath>
 #include <queue>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include "leveldb/comparator.h"
 #include "leveldb/env.h"
@@ -182,10 +184,10 @@ struct SegmentManager::Rep {
   std::function<void()> gc_func;
 };
 
-static bool GetSegmentFileInfo(const std::string& filename, uint32_t& seg_id) {
+static bool GetSegmentFileInfo(const std::string& filename, uint32_t* seg_id) {
   if (filename.find("seg.") == 0) {
     std::string seg_id_str(filename.begin() + 4, filename.end());
-    seg_id = std::stoi(seg_id_str);
+    *seg_id = std::stoi(seg_id_str);
     return true;
   }
   return false;
@@ -453,7 +455,7 @@ Status SegmentManager::OpenManager(const Options& options,
   std::vector<uint32_t> seg_ids;
   for (auto filename : subfiles) {
     uint32_t seg_id = -1;
-    if (GetSegmentFileInfo(filename, seg_id)) {
+    if (GetSegmentFileInfo(filename, &seg_id)) {
       std::string filepath = dbname + "/" + filename;
       seg_files.push_back(filepath);
       seg_ids.push_back(seg_id);

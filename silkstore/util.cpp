@@ -10,8 +10,7 @@ namespace leveldb {
 
 namespace silkstore {
 
-std::vector<int>
-KMeansSegmenter::classify(const std::vector<double> &data_points, int k) {
+std::vector<int> KMeansSegmenter::classify(const std::vector<double> &data_points, int k) {
   k = std::min(k, (int)data_points.size());
   std::vector<double> centroids;
   for (int i = 0; i < k; ++i) {

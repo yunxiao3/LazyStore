@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
-#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unordered_set>
+#include <sstream>
 #include "leveldb/cache.h"
 #include "leveldb/db.h"
 #include "leveldb/env.h"
@@ -45,13 +45,13 @@
 //      heapprofile -- Dump a heap profile (if supported by this port)
 static const char* FLAGS_benchmarks =
     "fillrandom,"
-    //"fillseq,"
-    //"overwrite,"
+    // "fillseq,"
+    // "overwrite,"
     // "readrandomsmall,"
     "shortrange,"
     "readseq,"
 
-    //"readrandomsmall," // Extra run to allow previous compactions to quiesce
+    // "readrandomsmall," // Extra run to allow previous compactions to quiesce
     /*
      "fillseq,"
      "readrandom,"
@@ -364,7 +364,7 @@ struct SharedState {
   int num_done GUARDED_BY(mu);
   bool start GUARDED_BY(mu);
 
-  SharedState(int total)
+  explicit SharedState(int total)
       : cv(&mu), total(total), num_initialized(0), num_done(0), start(false) {}
 };
 
@@ -375,7 +375,7 @@ struct ThreadState {
   Stats stats;
   SharedState* shared;
 
-  ThreadState(int index) : tid(index), rand(1000 + index) {}
+  explicit ThreadState(int index) : tid(index), rand(1000 + index) {}
 };
 
 }  // namespace
@@ -497,7 +497,7 @@ class ReadWriteWorkload : public Workload {
 
 class WorkloadSelector {
  public:
-  WorkloadSelector(const std::vector<Workload*> workloads)
+  explicit WorkloadSelector(const std::vector<Workload*> workloads)
       : workloads(workloads) {}
   virtual ~WorkloadSelector() {}
   virtual int Select(ThreadState* thread) = 0;
@@ -508,7 +508,7 @@ class WorkloadSelector {
 
 class RandomWorkloadSelector : public WorkloadSelector {
  public:
-  RandomWorkloadSelector(const std::vector<Workload*> workloads)
+  explicit RandomWorkloadSelector(const std::vector<Workload*> workloads)
       : WorkloadSelector(workloads) {}
 
   int Select(ThreadState* thread) override {
@@ -518,7 +518,8 @@ class RandomWorkloadSelector : public WorkloadSelector {
 
 class WeightedRandomWorkloadSelector : public WorkloadSelector {
  public:
-  WeightedRandomWorkloadSelector(const std::vector<Workload*> workloads)
+  explicit WeightedRandomWorkloadSelector(
+      const std::vector<Workload*> workloads)
       : WorkloadSelector(workloads) {
     for (int i = 0; i < workloads.size(); ++i) {
       int weight = workloads[i]->Weight();
@@ -1452,7 +1453,6 @@ class Benchmark {
     }
   }
 };
-
 }  // namespace leveldb
 
 int main(int argc, char** argv) {

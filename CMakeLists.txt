@@ -175,12 +175,12 @@ target_sources(leveldb
     "${PROJECT_SOURCE_DIR}/nvm/nvmemtable.cc"
     "${PROJECT_SOURCE_DIR}/nvm/nvmem.h"
     "${PROJECT_SOURCE_DIR}/nvm/nvmem.cc"
-    "${PROJECT_SOURCE_DIR}/nvm/nvmmanager.h"
-    "${PROJECT_SOURCE_DIR}/nvm/nvmmanager.cc"
-    "${PROJECT_SOURCE_DIR}/nvm/nvmleafindex.cc"
-    "${PROJECT_SOURCE_DIR}/nvm/nvmleafindex.h"
-    "${PROJECT_SOURCE_DIR}/nvm/leafindex/leafindex.h"
-    "${PROJECT_SOURCE_DIR}/nvm/leafindex/leafindex.cc"
+    "${PROJECT_SOURCE_DIR}/nvm/nvm_manager.h"
+    "${PROJECT_SOURCE_DIR}/nvm/nvm_manager.cc"
+    "${PROJECT_SOURCE_DIR}/nvm/nvm_leaf_index.cc"
+    "${PROJECT_SOURCE_DIR}/nvm/nvm_leaf_index.h"
+    "${PROJECT_SOURCE_DIR}/nvm/leafindex/leaf_index.h"
+    "${PROJECT_SOURCE_DIR}/nvm/leafindex/leaf_index.cc"
 
   # Only CMake 3.3+ supports PUBLIC sources in targets exported by "install".
   $<$<VERSION_GREATER:CMAKE_VERSION,3.2>:PUBLIC>
@@ -316,11 +316,10 @@ if(LEVELDB_BUILD_TESTS)
   leveldb_test("${PROJECT_SOURCE_DIR}/util/status_test.cc")
   leveldb_test("${PROJECT_SOURCE_DIR}/util/no_destructor_test.cc")
 
-  leveldb_test("${PROJECT_SOURCE_DIR}/silkstore/silkstore_test.cc")
-  leveldb_test("${PROJECT_SOURCE_DIR}/nvm/nvmsilkstore_test.cc")
-  leveldb_test("${PROJECT_SOURCE_DIR}/nvm/nvmleafindex_test.cc")
-
-  leveldb_test("${PROJECT_SOURCE_DIR}/silkstore/minirun_test.cc")
+  leveldb_test("${PROJECT_SOURCE_DIR}/silkstore/test/silkstore_test.cc")
+  leveldb_test("${PROJECT_SOURCE_DIR}/nvm/test/nvm_silkstore_test.cc")
+  leveldb_test("${PROJECT_SOURCE_DIR}/nvm/test/nvm_leaf_index_test.cc")
+  leveldb_test("${PROJECT_SOURCE_DIR}/silkstore/test/minirun_test.cc")
   leveldb_test("${PROJECT_SOURCE_DIR}/silkstore/util_test.cc")
 
   if(NOT BUILD_SHARED_LIBS)
@@ -571,8 +570,8 @@ file(GLOB_RECURSE BUSTUB_LINT_FILES
 # "${PROJECT_SOURCE_DIR}/table/*.h"
 # "${PROJECT_SOURCE_DIR}/db/*.cc"
 # "${PROJECT_SOURCE_DIR}/include/*.cc"
-# "${PROJECT_SOURCE_DIR}/nvm/*.cc"
-# "${PROJECT_SOURCE_DIR}/silkstore/*.cc"
+ "${PROJECT_SOURCE_DIR}/nvm/*.cc"
+ "${PROJECT_SOURCE_DIR}/silkstore/*.cc"
 # "${PROJECT_SOURCE_DIR}/helpers/*.cc"
 # "${PROJECT_SOURCE_DIR}/util/*.cc"
 #  "${PROJECT_SOURCE_DIR}/table/*.cc"

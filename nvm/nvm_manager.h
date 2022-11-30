@@ -1,9 +1,10 @@
-#ifndef NVMMANAGER
-#define NVMMANAGER
+#pragma once
 
 #include <deque>
 #include <iostream>
 #include <mutex>
+#include <string>
+#include <utility>
 #include <vector>
 #include "nvm/nvmem.h"
 #define LOGCAP 30 * MB
@@ -25,7 +26,7 @@ class NvmManager {
 
  public:
   NvmManager();
-  NvmManager(const char* nvm_file, size_t size = GB);
+  explicit NvmManager(const char* nvm_file, size_t size = GB);
   ~NvmManager();
   // allocate new nvmem
   Nvmem* allocate(size_t cap = 30 * MB);
@@ -38,5 +39,3 @@ class NvmManager {
 
 }  // namespace silkstore
 }  // namespace leveldb
-
-#endif

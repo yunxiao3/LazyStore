@@ -1,7 +1,5 @@
 
-
-#ifndef SILKSTORE_NVM_COMMON_H
-#define SILKSTORE_NVM_COMMON_H
+#pragma once
 
 #define KB (1024)
 #define MB (1024 * 1024)
@@ -12,11 +10,11 @@
 
 // obtain the starting address of a cache line
 #define getcacheline(addr) \
-  (((unsigned long long)(addr)) & (~(unsigned long long)(CACHE_LINE_SIZE - 1)))
+  (((uint64_t)(addr)) & (~(uint64_t)(CACHE_LINE_SIZE - 1)))
 
 // check if address is aligned at line boundary
 #define isaligned_atline(addr) \
-  (!(((unsigned long long)(addr)) & (unsigned long long)(CACHE_LINE_SIZE - 1)))
+  (!(((uint64_t)(addr)) & (uint64_t)(CACHE_LINE_SIZE - 1)))
 
 #include <immintrin.h>
 
@@ -27,8 +25,8 @@ static inline void clwb(void* addr) {
 
 // flush more than one cache line (64 bits') data
 static inline void clwbmore(void* start, void* end) {
-  unsigned long long start_line = getcacheline(start);
-  unsigned long long end_line = getcacheline(end);
+  uint64_t start_line = getcacheline(start);
+  uint64_t end_line = getcacheline(end);
   do {
     clwb((char*)start_line);
     start_line += CACHE_LINE_SIZE;
@@ -46,5 +44,3 @@ static inline void nontemporal_store_512(void* mem_addr, void* c) {
   auto t = _mm512_load_si512((const __m512i*)c);
   _mm512_stream_si512((__m512i*)mem_addr, t);
 }
-
-#endif

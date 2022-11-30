@@ -1,5 +1,5 @@
 
-#include "nvm/nvmmanager.h"
+#include "nvm/nvm_manager.h"
 
 namespace leveldb {
 namespace silkstore {

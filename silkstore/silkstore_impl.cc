@@ -1,11 +1,16 @@
 //
 // Created by zxjcarrot on 2019-07-05.
 //
+#include <algorithm>
 #include <cmath>
 #include <functional>
+#include <map>
 #include <memory>
 #include <queue>
+#include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
 #include "db/filename.h"
 #include "db/log_reader.h"
@@ -192,7 +197,6 @@ static std::string CurrentFilename(const std::string& dbname) {
 
 Status SilkStore::RecoverNvmemtable(uint64_t log_number,
                                     SequenceNumber* max_sequence) {
-  // std::cout << "RecoverNvmemtable\n";
   struct LogReporter : public log::Reader::Reporter {
     Env* env;
     Logger* info_log;
@@ -206,7 +210,7 @@ Status SilkStore::RecoverNvmemtable(uint64_t log_number,
     }
   };
 
-  // Open the log file
+  // Open the log file.
   std::string fname = LogFileName(dbname_, log_number);
   SequentialFile* file;
   Status status = env_->NewSequentialFile(fname, &file);
@@ -214,7 +218,7 @@ Status SilkStore::RecoverNvmemtable(uint64_t log_number,
     return status;
   }
 
-  // Create the log reader.
+  // Create a log reader.
   LogReporter reporter;
   reporter.env = env_;
   reporter.info_log = options_.info_log;
@@ -228,7 +232,7 @@ Status SilkStore::RecoverNvmemtable(uint64_t log_number,
   Log(options_.info_log, "Recovering log #%llu",
       (unsigned long long)log_number);
 
-  // Read the log records
+  // Read log records.
   std::string scratch;
   Slice record;
   WriteBatch batch;
@@ -241,7 +245,7 @@ Status SilkStore::RecoverNvmemtable(uint64_t log_number,
       fprintf(stderr, "RecoverMemtable Corruption log record too small\n");
     }
   }
-  // split record into string numbers
+  // split record into string numbers.
   std::string rec = record.ToString();
   std::string delimiter = ",";
   std::vector<size_t> records;
@@ -519,8 +523,7 @@ Status SilkStore::MakeRoomForWrite(bool force) {
             NewDynamicFilterBloom(new_memtable_capacity_num_entries,
                                   options_.memtable_dynamic_filter_fp_rate);
       }
-      // mem_ = new MemTable(internal_comparator_, dynamic_filter);
-      // TODO Opt nvm's alllocate
+      // TODO(yunxiao) Opt nvm's alllocate
       mem_ = new NvmemTable(
           internal_comparator_, dynamic_filter,
           nvm_manager_->allocate(new_memtable_capacity + 4 * MB));
@@ -847,7 +850,7 @@ class GroupedSegmentAppender {
   // Return the builder of the designated group.
   Status MakeRoomForGroupAndGetBuilder(uint32_t group_id,
                                        SegmentBuilder** builder_ptr,
-                                       bool& switched_segment) {
+                                       bool* switched_segment) {
     assert(group_id >= 0 && group_id < builders.size());
     if (builders[group_id] != nullptr &&
         builders[group_id]->FileSize() < options.segment_file_size_thresh) {
@@ -872,7 +875,7 @@ class GroupedSegmentAppender {
     if (!s.ok()) {
       return s;
     }
-    switched_segment = true;
+    *switched_segment = true;
     *builder_ptr = builders[group_id] = new_builder.release();
     return Status::OK();
   }
@@ -896,7 +899,7 @@ class GroupedSegmentAppender {
 
 std::pair<uint32_t, uint32_t> SilkStore::ChooseLeafCompactionRunRange(
     const LeafIndexEntry& leaf_index_entry) {
-  // TODO: come up with a better approach
+  // TODO(yunxiao): come up with a better approach
   uint32_t num_runs = leaf_index_entry.GetNumMiniRuns();
   assert(num_runs > 1);
   return {num_runs - 2, num_runs - 1};
@@ -1096,7 +1099,7 @@ Status SilkStore::GarbageCollectSegment(Segment* seg,
       SegmentBuilder* seg_builder;
       bool switched_segment = false;
       s = appender.MakeRoomForGroupAndGetBuilder(0, &seg_builder,
-                                                 switched_segment);
+                                                 &switched_segment);
       if (!s.ok())  // error, early exit
         return true;
       // Copy the entire minirun to the other segment file and update leaf_index
@@ -1442,7 +1445,7 @@ void SilkStore::ProcessOneLeaf(
                                  &leaf_index_wb, this]() {
       bool switched_segment = false;
       Status s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(
-          0, &seg_builder, switched_segment);
+          0, &seg_builder, &switched_segment);
       if (!s.ok()) return s;
 
       if (switched_segment &&
@@ -1514,7 +1517,7 @@ void SilkStore::ProcessOneLeaf(
   SegmentBuilder* seg_builder = nullptr;
   bool switched_segment = false;
   s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(0, &seg_builder,
-                                                             switched_segment);
+                                                             &switched_segment);
   if (!s.ok()) return;
 
   if (switched_segment &&
@@ -1539,7 +1542,7 @@ void SilkStore::ProcessOneLeaf(
   s = SplitLeaf(leaf_index_entry, seq_num, max_keys, max_key_index_entry_bufs);
   assert(max_keys.size() == max_key_index_entry_bufs.size());
   if (!s.ok()) return;
-  //++num_splits;
+  // ++num_splits;
   // Invalidate the miniruns pointed by the old leaf index entry
   s = InvalidateLeafRuns(leaf_index_entry, 0,
                          leaf_index_entry.GetNumMiniRuns() - 1);
@@ -1550,7 +1553,7 @@ void SilkStore::ProcessOneLeaf(
   // Update the index entries
   stat_store_.SplitLeaf(leaf_max_key.ToString(), max_keys);
   leaf_index_wb.Delete(leaf_max_key);
-  //--num_leaves;
+  // --num_leaves;
   --(state.leaf_change_num_);
   for (size_t i = 0; i < max_keys.size(); ++i) {
     leaf_index_wb.Put(Slice(max_keys[i]), Slice(max_key_index_entry_bufs[i]));
@@ -1704,7 +1707,7 @@ void SilkStore::ProcessKeyValueCompaction(
   SegmentBuilder* seg_builder = nullptr;
   bool switched_segment = false;
   s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(0, &seg_builder,
-                                                             switched_segment);
+                                                             &switched_segment);
   if (!s.ok()) return;
 
   if (switched_segment &&
@@ -1837,7 +1840,7 @@ void SilkStore::ProcessKeyValueCompaction(
       SegmentBuilder* seg_builder = nullptr;
       bool switched_segment = false;
       s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(
-          0, &seg_builder, switched_segment);
+          0, &seg_builder, &switched_segment);
       if (!s.ok()) {
         return;
       }
@@ -2041,7 +2044,7 @@ Status SilkStore::DoCompactionWork(WriteBatch& leaf_index_wb) {
     SegmentBuilder* seg_builder = nullptr;
     bool switched_segment = false;
     s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(
-        0, &seg_builder, switched_segment);
+        0, &seg_builder, &switched_segment);
     if (!s.ok()) return s;
 
     if (switched_segment &&
@@ -2142,7 +2145,7 @@ Status SilkStore::DoCompactionWork(WriteBatch& leaf_index_wb) {
     SegmentBuilder* seg_builder = nullptr;
     bool switched_segment = false;
     s = grouped_segment_appender.MakeRoomForGroupAndGetBuilder(
-        0, &seg_builder, switched_segment);
+        0, &seg_builder, &switched_segment);
     if (!s.ok()) return s;
     if (switched_segment &&
         leaf_index_wb.ApproximateSize() > kLeafIndexWriteBufferMaxSize) {

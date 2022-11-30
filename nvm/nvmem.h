@@ -3,9 +3,11 @@
  * @ Create Time: 2021-05-27 20:34:02
  * @ Description: Allocate NVM memory to store append log
  */
+#pragma once
 
-#ifndef SILKSTORE_NVMEM
-#define SILKSTORE_NVMEM
+#include <malloc.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include <atomic>
 #include <cassert>
@@ -13,11 +15,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <malloc.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "nvm/nvm-common.h"
 
 // comment this out for using DRAM as NVM
 #define NVMPOOL_REAL
@@ -26,6 +23,8 @@
 // to map to a desired address
 #include <libpmem.h>
 #endif
+
+#include "nvm/nvm_common.h"
 
 namespace leveldb {
 namespace silkstore {
@@ -55,5 +54,3 @@ class Nvmem {
 
 }  // namespace silkstore
 }  // namespace leveldb
-
-#endif

@@ -20,9 +20,9 @@
 #include "port/port.h"
 #include "port/thread_annotations.h"
 #include "leaf_store.h"
+#include "nvm/nvm_leaf_index.h"
+#include "nvm/nvm_manager.h"
 #include "nvm/nvmemtable.h"
-#include "nvm/nvmleafindex.h"
-#include "nvm/nvmmanager.h"
 #include "segment.h"
 namespace leveldb {
 namespace silkstore {

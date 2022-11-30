@@ -17,7 +17,6 @@
 #include "db/dbformat.h"
 #include "leveldb/db.h"
 #include "leveldb/filter_policy.h"
-
 #include "nvm/nvmem.h"
 
 namespace leveldb {
@@ -70,7 +69,7 @@ class LeafIndex {
            const Slice& value);
   Status AddBatch(const WriteBatch* b);
   Status ResetCounter();
-  Status Recovery(SequenceNumber& max_sequence);
+  Status Recovery(SequenceNumber max_sequence);
   Status AddCounter(size_t added);
   size_t GetCounter();
   bool AddIndex(Slice, uint64_t);

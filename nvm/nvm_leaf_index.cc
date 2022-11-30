@@ -1,4 +1,4 @@
-#include "nvm/nvmleafindex.h"
+#include "nvm/nvm_leaf_index.h"
 #include <stdexcept>
 #include "util/coding.h"
 
@@ -22,21 +22,21 @@ Iterator* NvmLeafIndex::NewIterator(const ReadOptions& options) {
 
 class EmptyKVIterator : public Iterator {
  public:
-  virtual void Seek(const std::string& key){};
+  virtual void Seek(const std::string& key) {}
 
-  virtual void SeekToFirst(){};
+  virtual void SeekToFirst() {}
 
-  virtual void SeekToLast(){};
+  virtual void SeekToLast() {}
 
-  virtual bool Valid() { return false; };
+  virtual bool Valid() { return false; }
 
-  virtual void Next(){};
+  virtual void Next() {}
 
-  virtual void Prev(){};
+  virtual void Prev() {}
 
-  virtual std::string Key() { return nullptr; };
+  virtual std::string Key() { return nullptr; }
 
-  virtual std::string Value() { return nullptr; };
+  virtual std::string Value() { return nullptr; }
 };
 
 NvmLeafIndex::NvmLeafIndex(const Options& options, const std::string& dbname) {

@@ -7,7 +7,7 @@
 
 #include "db/dbformat.h"
 #include "leveldb/write_batch.h"
-#include "nvm/leafindex/leafindex.h"
+#include "nvm/leafindex/leaf_index.h"
 #include "nvm/nvmemtable.h"
 namespace leveldb {
 

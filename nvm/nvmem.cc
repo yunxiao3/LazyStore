@@ -1,6 +1,6 @@
 #include "nvm/nvmem.h"
 #include <iostream>
-#include "nvm/nvmmanager.h"
+#include "nvm/nvm_manager.h"
 
 namespace leveldb {
 
@@ -11,8 +11,7 @@ uint64_t Nvmem::Insert(const char* value, int len) {
   // Not enough memory assert
   if (index_ + len >= size_) {
     fprintf(stderr,
-            " nvm memory is full!  \
-            index %lu , len: %d , size: %lu \n ",
+            " nvm memory is full! index %lu , len: %d , size: %lu \n ",
             index_, len, size_);
     assert(false);
   } else {

@@ -11,9 +11,10 @@
 #ifndef STORAGE_LEVELDB_DB_NVMEMTABLE_STL_H_
 #define STORAGE_LEVELDB_DB_NVMEMTABLE_STL_H_
 
-#include "db/dbformat.h"
 #include <map>
 #include <string>
+
+#include "db/dbformat.h"
 #include "leveldb/db.h"
 #include "leveldb/filter_policy.h"
 #include "nvm/nvmem.h"
@@ -67,7 +68,7 @@ class NvmemTable {
   void Add(SequenceNumber seq, ValueType type, const Slice& key,
            const Slice& value);
   Status AddBatch(const WriteBatch* b);
-  Status Recovery(SequenceNumber& max_sequence);
+  Status Recovery(SequenceNumber max_sequence);
   Status AddCounter(size_t added);
   size_t GetCounter();
   bool AddIndex(Slice, uint64_t);

@@ -1,15 +1,15 @@
 // Copyright (c) 2011 The LevelDB Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
-#include "nvm/nvmemtable.h"
+#include <iostream>
+
 #include "db/dbformat.h"
 #include "leveldb/comparator.h"
 #include "leveldb/env.h"
 #include "leveldb/iterator.h"
 #include "leveldb/write_batch.h"
 #include "util/coding.h"
-
-#include <iostream>
+#include "nvm/nvmemtable.h"
 
 namespace leveldb {
 
@@ -141,7 +141,7 @@ bool NvmemTable::AddIndex(Slice key, uint64_t val) {
   return true;
 }
 
-Status NvmemTable::Recovery(SequenceNumber& max_sequence) {
+Status NvmemTable::Recovery(SequenceNumber max_sequence) {
   // ToDo Get the right counters
   // Because updatecounter is not called in testcase, counters is set to 20
   int counters = nvmem->GetCounter();
